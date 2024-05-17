@@ -33,7 +33,7 @@ router.post(
                 message : `입력 값을 다시 확인해주세요.`
             })
             } else {
-            const {email, password, users_number} = req.body
+            const {email, password} = req.body
 
             let sql = `INSERT INTO users(email, password) VALUES(?,?)`
             let values = [email, password]
@@ -83,8 +83,6 @@ router.post(
                             httpOnly : true
                         })
 
-                        console.log(token);
-
                         res.status(200).json({
                         })
                     } else {
@@ -95,3 +93,61 @@ router.post(
             }
         )
     })
+
+router.post('/resetpw',  
+        [
+        body('email').notEmpty().isEmail().withMessage('이메일 확인필요'),
+        validate
+        ]
+        , function(req, res) {
+        const {email} = req.body
+
+        let sql = `UPDATE users SET password = '' WHERE email = ?`
+        connection.query(sql, email,
+            function (err, results) {
+                if(err){
+                    console.log(err)
+                    return res.status(400).end()
+                }
+
+                if(results.affectedRows == 0 ){
+                    res.status(403).json({
+                        message : "email이 틀렸습니다."
+                    })
+                } else {
+                    res.status(200).json({
+                        message : "비밀번호가 초기화 되었습니다."
+                    })
+                }
+            })
+    })
+    .put('/resetpw', 
+    [
+        body('email').notEmpty().isEmail().withMessage('이메일 확인필요'),
+        body('password').notEmpty().isString().withMessage('비밀번호를 입력해주세요'),
+        validate
+    ]
+    ,function(req, res){
+        const {email, password} = req.body
+
+        let sql = `UPDATE users SET password = ? WHERE email = ?`
+        let values = [password,email]
+        connection.query(sql, values,
+            function (err, results) {
+                if(err){
+                    console.log(err)
+                    return res.status(400).end()
+                }
+
+                if(results.affectedRows == 0){
+                    return res.status(400).end()
+                }else{
+                    res.status(200).json({
+                        message : "비밀번호가 변경되었습니다."
+                    })
+                }
+            }
+        )  
+    })
+
+module.exports = router
