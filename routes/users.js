@@ -84,6 +84,7 @@ router.post(
                         })
 
                         res.status(200).json({
+                            message : "로그인 되었습니다."
                         })
                     } else {
                     res.status(403).json({
