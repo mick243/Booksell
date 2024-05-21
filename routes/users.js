@@ -15,7 +15,7 @@ const validate = (req, res, next) => {
     if(err.isEmpty()){
         return next();
     } else {
-        return res.status(400).json(err.array())
+        return res.status(400).json(err.array());
     }
 };
 
@@ -33,7 +33,7 @@ router.post(
                 message : `입력 값을 다시 확인해주세요.`
             })
             } else {
-            const {email, password} = req.body
+            const {email, password} = req.body;
 
             let sql = `INSERT INTO users(email, password) VALUES(?,?)`
             let values = [email, password]
@@ -41,9 +41,9 @@ router.post(
                 function (err, results) {
                     if(err){
                         console.log(err)
-                        return res.status(400).end()
+                        return res.status(400).end();
                     }
-                        res.status(201).json(results)
+                        res.status(201).json(results);
                 }
             )
         }
@@ -57,18 +57,18 @@ router.post(
         validate
     ]
     ,function(req, res) {
-        const {email, password} = req.body
+        const {email, password} = req.body;
 
         let sql = `SELECT * FROM users WHERE email = ?`
 
         connection.query(sql, email,
             function (err, results) {
                 if(err){
-                    console.log(err)
-                    return res.status(400).end()
+                    console.log(err);
+                    return res.status(400).end();
                 }
                 
-                var loginUser = results[0]
+                var loginUser = results[0];
 
                 if(loginUser && loginUser.password == password) {
                     
@@ -101,14 +101,14 @@ router.post('/resetpw',
         validate
         ]
         , function(req, res) {
-        const {email} = req.body
+        const {email} = req.body;
 
         let sql = `UPDATE users SET password = '' WHERE email = ?`
         connection.query(sql, email,
             function (err, results) {
                 if(err){
-                    console.log(err)
-                    return res.status(400).end()
+                    console.log(err);
+                    return res.status(400).end();
                 }
 
                 if(results.affectedRows == 0 ){
@@ -129,19 +129,19 @@ router.post('/resetpw',
         validate
     ]
     ,function(req, res){
-        const {email, password} = req.body
+        const {email, password} = req.body;
 
         let sql = `UPDATE users SET password = ? WHERE email = ?`
         let values = [password,email]
         connection.query(sql, values,
             function (err, results) {
                 if(err){
-                    console.log(err)
-                    return res.status(400).end()
+                    console.log(err);
+                    return res.status(400).end();
                 }
 
                 if(results.affectedRows == 0){
-                    return res.status(400).end()
+                    return res.status(400).end();
                 }else{
                     res.status(200).json({
                         message : "비밀번호가 변경되었습니다."
@@ -151,4 +151,4 @@ router.post('/resetpw',
         )  
     })
 
-module.exports = router
+module.exports = router;
