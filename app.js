@@ -8,6 +8,12 @@ app.listen(process.env.PORT)
 
 const userRouter = require('./routes/users.js');
 const mainpageRouter = require('./routes/mainpage.js');
+const cartsRouter = require('./routes/carts.js');
+const ordersRouter = require('./routes/orders.js');
+const likesRouter = require('./routes/likes.js');
 
-app.use("/", userRouter);
+app.use("/users", userRouter);
 app.use("/mainpage", mainpageRouter);
+app.use("/carts", cartsRouter);
+app.use("/orders", ordersRouter);
+app.use("/likes", likesRouter);

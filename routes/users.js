@@ -4,8 +4,6 @@ const connection = require('../mysql');
 const {body, param, validationResult} = require('express-validator');
 
 const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
-dotenv.config();
 
 router.use(express.json());
 

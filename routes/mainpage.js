@@ -15,36 +15,16 @@ const validate = (req, res, next) => {
     }
 }
 
-router
-    .route('/')
-    .get(
-        [
-            body(''), validate
-        ]
-        ,(req, res, next) => {
+router.get('/books', (req, res) =>{
+    res.json('전체 도서 조회')
+})
 
-            var {books} = req.body
+router.get('/books/:id', (req, res) =>{
+    res.json('개별 도서 조회')
+})
 
-            let sql = `SELECT * FROM books`
-            connection.query(sql, books,
-                function (err, results) {
-                   if(err){
-                       console.log(err)
-                       return res.status(400).end()
-                   }
-                   if(results.length)
-                       res.status(200).json(results)
-                   else
-                       return res.status(400).end()
-               }
-           )  
-   })
-// let sql = `SELECT * FROM books WHERE id = ?`
-// let sql = `SELECT * FROM books WHERE category_id = ?`
-
-// let sql = `INSERT INTO cart WHERE books.id = ?`
-// let sql = `SELECT * FROM cart`
-// let sql = `DELETE FROM cart WHERE book_id = ?`
-// let sql = 'INSERT INTO cart WHERE books.id = ?'
+router.get('/books', (req, res) =>{
+    res.json('카테고리별 도서 조회')
+})
 
 module.exports = router
