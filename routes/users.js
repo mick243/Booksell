@@ -1,7 +1,9 @@
 const express = require('express');
+const {StatusCodes} = require('http-status-codes');
 const router = express.Router();
 const connection = require('../mysql');
 const {body, param, validationResult} = require('express-validator');
+const join = require('../controller/UserController')
 
 const jwt = require('jsonwebtoken');
 
@@ -17,35 +19,7 @@ const validate = (req, res, next) => {
     }
 };
 
-
-router.post(
-    '/join', 
-    [
-        body('email').notEmpty().isEmail().withMessage('이메일 확인필요'),
-        body('password').notEmpty().isString().withMessage('비밀번호 확인 필요'),
-        validate
-    ]
-    ,function(req, res){
-        if(req.body == {}) {
-            res.status(400).json({
-                message : `입력 값을 다시 확인해주세요.`
-            })
-            } else {
-            const {email, password} = req.body;
-
-            let sql = `INSERT INTO users(email, password) VALUES(?,?)`
-            let values = [email, password]
-            connection.query(sql, values,
-                function (err, results) {
-                    if(err){
-                        console.log(err)
-                        return res.status(400).end();
-                    }
-                        res.status(201).json(results);
-                }
-            )
-        }
-    })
+router.post('/join', join)
 
 router.post(
     '/login', 

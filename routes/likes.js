@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const connection = require('../mysql')
+// const connection = require('../mysql')
 const {body, param, validationResult} = require('express-validator')
 
 router.use(express.json())
@@ -14,4 +14,4 @@ router.delete('/:id', (req, res) =>{
 })
 
 
-module.exports = router
+module.exports = router;
