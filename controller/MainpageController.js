@@ -2,41 +2,46 @@ const connection = require('../mysql');
 const {StatusCodes} = require('http-status-codes');
 
 const allBooks = (req, res) => {
-    let{category_id} = req.query;
+    let{category_id, newBook, limit, currentPage} = req.query;
 
-    if(category_id){
-    let sql = 'SELECT * FROM books WHERE category_id = ?';
-    connection.query(sql, category_id,
-        function (err, results) {
-        if(err){
-            console.log(err);
-            return res.status(StatusCodes.BAD_REQUEST).end();
+        let offset = limit * (currentPage-1);
+        
+        let sql = 'SELECT * FROM books';
+        let values = [];
+        if(category_id && newBook){
+            sql += ` WHERE category_id = ?AND pub_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW()`;
+            values = [category_id];
+        }
+        else if(category_id) {
+            sql += ` WHERE category_id = ?`;
+            values = [category_id];
+        }
+        else if(newBook){
+            sql += ` WHERE pub_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW()`;
         }
 
-        if(results.length)
-            return res.status(StatusCodes.OK).json(results);
-        else
-            return res.status(StatusCodes.NOT_FOUND).end();
-        })
-    } else {
+        sql += "LIMIT ? OFFSET ?";
+        values.push(parseInt(limit), offset);
 
-    let sql = 'SELECT * FROM books';
-    connection.query(sql,  
-        function (err, results) {
-        if(err){
-            console.log(err);
-            return res.status(StatusCodes.BAD_REQUEST).end();
+        connection.query(sql, values,
+            function (err, results) {
+            if(err){
+                console.log(err);
+                return res.status(StatusCodes.BAD_REQUEST).end();
+            }
+
+            if(results.length)
+                return res.status(StatusCodes.OK).json(results);
+            else
+                return res.status(StatusCodes.NOT_FOUND).end();
+            })
         }
-            res.status(StatusCodes.OK).json(results);
-        })
-    }
-};
-
 
 const findBook = (req, res) => {
     let{id} = req.params;
 
-    let sql = 'SELECT * FROM books WHERE id = ?';
+    let sql = `SELECT * FROM Booksell.books LEFT JOIN category 
+                ON books.category_id = category.id WHERE books.id = ?`;
     connection.query(sql, id,
         function (err, results) {
         if(err){
