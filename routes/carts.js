@@ -1,24 +1,13 @@
 const express = require('express')
+const { addCart, getCartItem, deleteCartItem} = require('../controller/CartController')
 const router = express.Router()
-// const connection = require('../mysql')
-const {body, param, validationResult} = require('express-validator')
 
 router.use(express.json())
 
-router.post('/', (req, res) =>{
-    res.json('장바구니 담기')
-})
+router.post('/', addCart)
 
-router.get('/', (req, res) =>{
-    res.json('장바구니 조회')
-})
+router.get('/', getCartItem)
 
-router.get('/', (req, res) =>{
-    res.json('장바구니 조회')
-})
-
-router.delete('/:id', (req, res) =>{
-    res.json('장바구니 도서 삭제')
-})
+router.delete('/:id', deleteCartItem)
 
 module.exports = router;
