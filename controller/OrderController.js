@@ -63,11 +63,13 @@ const getOrders = async (req, res) =>{
                  FROM orders LEFT JOIN delivery
                  ON orders.delivery_id = delivery.id;`
 
-    let [row, fields] = await connection.query(sql);
-    return res.status(StatusCodes.OK).json(row);
+      let [row, fields] = await connection.query(sql);
+      return res.status(StatusCodes.OK).json(row);
 };
 
 const getOrderDetail = async (req, res) =>{
+    const {id} = req.params;
+
     const connection = await mysql.createConnection({
         host: '127.0.0.1',
         user: 'root',
@@ -75,6 +77,13 @@ const getOrderDetail = async (req, res) =>{
         database: 'Booksell',
         dateStrings: true
       });
+      let sql = `SELECT book_id, title, author, price, quantity
+                 FROM orderedBook LEFT JOIN books
+                 ON orderedBook.book_id = books.id
+                 WHERE order_id = ?;`
+
+      let [row, fields] = await connection.query(sql, [id]);
+      return res.status(StatusCodes.OK).json(row);
 }
 
 module.exports = {
