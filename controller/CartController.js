@@ -1,12 +1,16 @@
+const jwt = require('jsonwebtoken');
 const connection = require('../mysql');
 const {StatusCodes} = require('http-status-codes');
+const dotenv = require('dotenv')
+dotenv.config();
 
 const addCart = (req, res) => {
 
-    const {book_id, quantity, user_id} = req.body;
+    const {book_id, quantity} = req.body;
+    let ea = ensureAuthorization(req);
 
     let sql = 'INSERT INTO cartItems (book_id, quantity, user_id) VALUES (?, ?, ?);'
-    let values = [book_id, quantity, user_id];
+    let values = [book_id, quantity, ea.id];
     connection.query(sql, values,
     function (err, results) {
         if(err){
@@ -18,16 +22,18 @@ const addCart = (req, res) => {
     })
 };
 
+
 const getCartItem = (req, res) => {
 
-    const {user_id, selected} = req.body
+    const {selected} = req.body
+    let ea = ensureAuthorization(req);
 
     let sql = `SELECT cartItems.id, book_id, title, summary, quantity, price 
                 FROM cartItems LEFT JOIN books 
                 ON cartItems.book_id = books.id
                 WHERE user_id = ? AND cartItems.id IN(?);`
-
-    connection.query(sql, [user_id, selected],
+    let values = [ea.id, selected];
+    connection.query(sql, values,
         function (err, results) {
         if(err){
             console.log(err);
@@ -38,13 +44,10 @@ const getCartItem = (req, res) => {
     };
 
 const deleteCartItem = (req, res) => {
+    const cartItemId = req.params.id;
 
-    const {user_id} = req.body;
-    const {id} = req.params;
-
-    let sql = 'DELETE FROM cartItems WHERE user_id = ?;'
-    let values = [user_id, id];
-    connection.query(sql, values,
+    let sql = 'DELETE FROM cartItems WHERE id = ?;'
+    connection.query(sql, cartItemId,
     function (err, results) {
         if(err){
             console.log(err);
@@ -53,6 +56,16 @@ const deleteCartItem = (req, res) => {
 
         return res.status(StatusCodes.OK).json(results);
     })
+}
+
+function ensureAuthorization(req) {
+    let receivedJwt = req.headers['authorization'];
+    console.log("received jwt : ", receivedJwt);
+
+    let decodedJwt = jwt.verify(receivedJwt, process.env.PRIVATE_KEY)
+    console.log(decodedJwt)
+
+    return decodedJwt;
 }
 
 module.exports = {
