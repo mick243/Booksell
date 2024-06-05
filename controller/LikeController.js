@@ -1,3 +1,4 @@
+const ensureAuthorization = require('../auth');
 const jwt = require('jsonwebtoken');
 const connection = require('../mysql');
 const {StatusCodes} = require('http-status-codes');
@@ -21,7 +22,7 @@ const addLike = (req, res) => {
         });
     } else {
         let sql = 'INSERT INTO likes (user_id, liked_book_id) VALUES (?, ?)'
-        let values = [ea.id, id];
+        let values = [ea.id, book_id];
         connection.query(sql, values,
         function (err, results) {
             if(err){
@@ -62,24 +63,24 @@ const removeLike = (req, res) => {
         })
     };
 }
-function ensureAuthorization(req, res) {
-    try {
-        let receivedJwt = req.headers['authorization'];
-        console.log("received jwt : ", receivedJwt);
+// function ensureAuthorization(req, res) {
+//     try {
+//         let receivedJwt = req.headers['authorization'];
+//         console.log("received jwt : ", receivedJwt);
 
-        let decodedJwt = jwt.verify(receivedJwt, process.env.PRIVATE_KEY)
-        console.log(decodedJwt);
+//         let decodedJwt = jwt.verify(receivedJwt, process.env.PRIVATE_KEY)
+//         console.log(decodedJwt);
 
-        return decodedJwt;
+//         return decodedJwt;
 
-    } catch(err) {
-        console.log(err.name);
-        console.log(err.message);
+//     } catch(err) {
+//         console.log(err.name);
+//         console.log(err.message);
 
-        return err
+//         return err
     
-    }
-}
+//     }
+// }
 
 module.exports = {
     addLike,
