@@ -23,7 +23,11 @@ const join = (req, res) => {
                     console.log(err)
                     return res.status(StatusCodes.BAD_REQUEST).end();
                 }
+
+                if(results.affectedRows)
                     res.status(StatusCodes.CREATED).json(results);
+                else
+                    return res.status(StatusCodes.BAD_REQUEST).end();
             })
 };
 
